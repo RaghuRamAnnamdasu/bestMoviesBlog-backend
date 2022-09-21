@@ -8,7 +8,8 @@ export async function deleteMovieById(id) {
   return await client.db("node_app").collection("movies").deleteOne({ _id: ObjectId(id) });
 }
 export async function createMovie(data) {
-  return await client.db("node_app").collection("movies").insertMany(data);
+  console.log("enteredAddMovie");
+  return await client.db("node_app").collection("movies").insertOne(data);
 }
 export async function getMovieById(id) {
   return await client.db("node_app").collection("movies").findOne({ _id: ObjectId(id) });

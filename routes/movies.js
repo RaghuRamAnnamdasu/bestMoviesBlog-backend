@@ -11,7 +11,7 @@ const router = express.Router();
   //   res.send(movies);
   // });
 
-  router.get('/', auth, async function (req, res) {
+  router.get('/', async function (req, res) {
 
     if(req.query.rating){
       req.query.rating = +req.query.rating;
@@ -27,7 +27,8 @@ const router = express.Router();
     movie ? res.send(movie) : res.status(404).send({msg : "Movie not found"});
   });
 
-  router.post('/', async function (req, res) {
+  router.post('/addmovies', async function (req, res) {
+    console.log("entered addmovies route");
     const data = req.body;
     const result = await createMovie(data);
     res.send(result);
@@ -40,7 +41,7 @@ const router = express.Router();
     result.deletedCount ? res.send(result) : res.status(404).send({msg : "Movie not found"});
   });
 
-  router.put('/:id', async function (req, res) {
+  router.put('/editMovie/:id', async function (req, res) {
     const {id} = req.params;
     const data = req.body;
     const result = await updateMovieById(id, data);
