@@ -2,51 +2,38 @@ import express from "express";
 import {createUSer, getUserByName} from "./helper.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import { client } from "../index.js";
+import { ObjectId } from "bson";
 
 const router = express.Router();
 
-  
 async function genHashedPassword(password){
-  const no_of_rounds = 10;
-  const salt = await bcrypt.genSalt(no_of_rounds);
-  const hashedPassword = await bcrypt.hash(password,salt);
-  return hashedPassword;
-}
+    const no_of_rounds = 10;
+    const salt = await bcrypt.genSalt(no_of_rounds);
+    const hashedPassword = await bcrypt.hash(password,salt);
+    return hashedPassword;
+  }
 
 
-  router.post('/signup', async function (req, res) {
-    const {username,password} = req.body;
-    const userFromDB = await getUserByName(username);
+// Login route
 
-      if(userFromDB){
-        res.status(400).send({"message" : "User name already exists"});
-      }else if(password.length < 8){
-        res.status(400).send({"message" : "Password Shall have minimum 8 characters"});
-      }else{
-        const hashedPassword = await genHashedPassword(password);
-        const result = await createUSer({username : username , password : hashedPassword});
-        console.log(hashedPassword);
-        res.send(result);
-      }
-  })
+  router.post('/login',async function (req, res) {
 
-  router.post('/login', async function (req, res) {
-    const {username,password} = req.body;
-    const userFromDB = await getUserByName(username);
-    const storedPassword = userFromDB.password;
-    const passwordMatch = await bcrypt.compare(password,storedPassword);
-    console.log(passwordMatch);
 
-      if(!userFromDB){
-        res.status(401).send({"message" : "Invalid Credentials"});
-      }else if(!passwordMatch){
-        res.status(401).send({"message" : "Invalid Credentials"});
-      }else{
-        const token = jwt.sign({id : userFromDB._id},process.env.secretKey);
+      const {email,password} = req.body[0];
+      if(email === "admin@gmail.com" && password===process.env.adminPassword){
+        const token = jwt.sign({id : "1234"},process.env.secretKey);
         res.send({"message" : "Successful Login", token : token});
+      }else{
+        res.status(401).send({"message" : "Invalid Credentials"});
       }
-  })
+      
+  })    
 
-export const usersRouter = router;
 
 
+  export const usersRouter = router;
+
+
+  
